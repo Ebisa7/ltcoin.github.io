@@ -3,15 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram WebApp</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="styles.css">
+    <title>World Clock & Time Converter</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7fa;
+            color: #333;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            padding: 40px;
+            flex-wrap: wrap;
+        }
+        .clock-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .clock {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 200px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .clock:hover {
+            transform: scale(1.05);
+        }
+        .clock .city {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #333;
+        }
+        .clock .time {
+            font-size: 2rem;
+            margin: 10px 0;
+            color: #4CAF50;
+        }
+        .clock .date {
+            font-size: 1rem;
+            color: #666;
+        }
+        .converter-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            margin-top: 40px;
+            text-align: center;
+        }
+        .converter-container h2 {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        select, button {
+            padding: 10px;
+            margin: 10px;
+            width: 100%;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin-top: 40px;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <button id="mainButton" class="btn">Show User Info</button>
-        <div id="userInfo" class="user-info"></div>
+
+<header>
+    <h1>World Clock & Time Converter</h1>
+</header>
+
+<div class="container">
+    <!-- World Clock -->
+    <div class="clock-container" id="clock-container">
+        <!-- Dynamic clocks will appear here -->
     </div>
-    <script src="script.js"></script>
+
+    <!-- Time Zone Converter -->
+    <div class="converter-container">
+        <h2>Time Zone Converter</h2>
+        <select id="from-timezone">
+            <option value="America/New_York">New York</option>
+            <option value="Europe/London">London</option>
+            <option value="Asia/Tokyo">Tokyo</option>
+            <option value="Australia/Sydney">Sydney</option>
+            <option value="Europe/Paris">Paris</option>
+        </select>
+        <select id="to-timezone">
+            <option value="America/New_York">New York</option>
+            <option value="Europe/London">London</option>
+            <option value="Asia/Tokyo">Tokyo</option>
+            <option value="Australia/Sydney">Sydney</option>
+            <option value="Europe/Paris">Paris</option>
+        </select>
+        <button onclick="convertTime()">Convert Time</button>
+        <div id="conversion-result" style="margin-top: 20px; font-size: 1.2rem; color: #4CAF50;"></div>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2024 World Clock & Converter</p>
+</footer>
+
+<script>
+    const cities = [
+        { name: "New York", timezone: "America/New_York" },
+        { name: "London", timezone: "Europe/London" },
+        { name: "Tokyo", timezone: "Asia/Tokyo" },
+        { name: "Sydney", timezone: "Australia/Sydney" },
+        { name: "Paris", timezone: "Europe/Paris" }
+    ];
+
+    const apiUrl = "https://worldtimeapi.org/api/timezone/";
+
+    // Function to fetch time for each city
+    async function fetchTime(city) {
+        try {
+            const response = await fetch(`${apiUrl}${city.timezone}`);
+            const data = await response.json();
+
+            // Extract time and date from API response
+            const time = data.datetime;
+            const date = new Date(time); // Convert to Date object
+
+            return {
+                time: date.toLocaleTimeString(), // Get the formatted time
+                date: date.toLocaleDateString()  // Get the formatted date
+            };
+        } catch (error) {
+            console.error("Error fetching time:", error);
+            return { time: "Error", date: "Error" };
+        }
+    }
+
+    // Function to update the clocks
+    async function updateClocks() {
+        const clockContainer = document.getElementById("clock-container");
+        clockContainer.innerHTML = "";  // Clear the container
+
+        // Loop over cities and fetch their times
+        for (let city of cities) {
+            const { time, date } = await fetchTime(city);
+            const clockElement = document.createElement("div");
+            clockElement.classList.add("clock");
+
+            clockElement.innerHTML = `
+                <div class="city">${city.name}</div>
+                <div class="time">${time}</div>
+                <div class="date">${date}</div>
+            `;
+            clockContainer.appendChild(clockElement);
+        }
+    }
+
+    // Function to convert time between timezones
+    async function convertTime() {
+        const fromTimezone = document.getElementById("from-timezone").value;
+        const toTimezone = document.getElementById("to-timezone").value;
+
+        try {
+            const responseFrom = await fetch(`${apiUrl}${fromTimezone}`);
+            const dataFrom = await responseFrom.json();
+            const timeFrom = new Date(dataFrom.datetime).toLocaleString();
+
+            const responseTo = await fetch(`${apiUrl}${toTimezone}`);
+            const dataTo = await responseTo.json();
+            const timeTo = new Date(dataTo.datetime).toLocaleString();
+
+            document.getElementById("conversion-result").innerHTML = `
+                Time in ${fromTimezone}: ${timeFrom}<br>
+                Time in ${toTimezone}: ${timeTo}
+            `;
+        } catch (error) {
+            console.error("Error converting time:", error);
+        }
+    }
+
+    // Initial clock update
+    updateClocks();
+
+    // Set an interval to update the time every 30 seconds
+    setInterval(updateClocks, 30000);
+</script>
+
 </body>
 </html>
