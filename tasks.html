@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Tasks</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden; /* Prevent horizontal scrolling */
+      font-family: 'Roboto', sans-serif;
+      background-color: #133A2A;
+      color: white;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 20px;
+    }
+    #tasks-container {
+      padding: 20px;
+      border-radius: 30px;
+      background-color: #115237; /* Set gray background for container */
+      margin: 0 auto; /* Center the container */
+      width: calc(90% - 30px); /* Full width minus 1px on each side */
+    }
+    .task {
+      padding: 10px 0; /* Add padding between tasks */
+      text-align: left;
+      border-bottom: 1px solid #444; /* Add a divider between tasks */
+      margin-bottom: 10px;
+    }
+    .task:last-child {
+      border-bottom: none; /* Remove the border for the last task */
+    }
+    .task img {
+      width: 50px;
+      height: 50px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    .task .task-details {
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .task .task-details h3 {
+      margin: 0;
+    }
+    .open-btn, .complete-btn {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      margin-top: 15px;
+      display: inline-block;
+    }
+    .open-btn:hover, .complete-btn:hover {
+      background-color: #0056b3;
+    }
+    .complete-btn {
+      background-color: #F2C94C; /* Green for complete */
+    }
+    .complete-btn:hover {
+      background-color: #D6B141;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Available Tasks</h1>
+  <div id="tasks-container">
+    <!-- Tasks will be dynamically loaded here -->
+  </div>
+
+  <script type="module">
+    // Import Firebase modules
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+    import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc, increment } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+
+    // Firebase configuration (use your actual credentials here)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBX3g8wWxcTtwFDsJNJVcjUDIGxMd1L0Rk",
+      authDomain: "mytestapp-f6913.firebaseapp.com",
+      databaseURL: "https://mytestapp-f6913-default-rtdb.firebaseio.com",
+      projectId: "mytestapp-f6913",
+      storageBucket: "mytestapp-f6913.firebasestorage.app",
+      messagingSenderId: "300150696072",
+      appId: "1:300150696072:web:1e29cb5a813d004018573d",
+      measurementId: "G-PPDR4TBQF5"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Fetch the tasks collection
+    const tasksContainer = document.getElementById('tasks-container');
+
+    // Create a query to fetch tasks with "active" status
+    const tasksQuery = query(collection(db, 'tasks'), where("status", "==", "active"));
+
+    // Listen for real-time updates
+    onSnapshot(tasksQuery, (snapshot) => {
+      const tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      displayTasks(tasks);
+    });
+
+    // Function to display tasks
+    function displayTasks(tasks) {
+      tasksContainer.innerHTML = ''; // Clear existing tasks
+      tasks.forEach(task => {
+        const taskDiv = document.createElement('div');
+        taskDiv.classList.add('task');
+        taskDiv.innerHTML = `
+          <img src="${task.iconUrl}" alt="${task.name}">
+          <div class="task-details">
+            <h3>${task.name}</h3>
+            <p>${task.description}</p>
+            <p>Reward: ${task.reward} ETN</p>
+          </div>
+          <a href="${task.link}" target="_blank" class="open-btn">Open Task</a>
+          <button class="complete-btn" data-id="${task.id}">Complete Task</button> <!-- Completion Button -->
+        `;
+        tasksContainer.appendChild(taskDiv);
+
+        // Add event listener to the "Complete Task" button
+        const completeBtn = taskDiv.querySelector('.complete-btn');
+        completeBtn.addEventListener('click', () => completeTask(task.id));
+      });
+    }
+
+    // Function to handle task completion
+    async function completeTask(taskId) {
+      const taskRef = doc(db, "tasks", taskId);
+      try {
+        // Increment the completions field by 1
+        await updateDoc(taskRef, {
+          completions: increment(1)
+        });
+        alert("Task completed successfully!");
+      } catch (e) {
+        console.error("Error completing task: ", e);
+        alert("Failed to complete task. Please try again.");
+      }
+    }
+  </script>
+
+</body>
+</html>
