@@ -1,222 +1,272 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>World Clock & Time Converter</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f7fa;
-            color: #333;
-        }
-        header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        header h1 {
-            margin: 0;
-        }
-        .container {
-            display: flex;
-            justify-content: space-between;
-            padding: 40px;
-            flex-wrap: wrap;
-        }
-        .clock-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
-        .clock {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            width: 200px;
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
-        .clock:hover {
-            transform: scale(1.05);
-        }
-        .clock .city {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #333;
-        }
-        .clock .time {
-            font-size: 2rem;
-            margin: 10px 0;
-            color: #4CAF50;
-        }
-        .clock .date {
-            font-size: 1rem;
-            color: #666;
-        }
-        .converter-container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-            margin-top: 40px;
-            text-align: center;
-        }
-        .converter-container h2 {
-            color: #333;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-        }
-        select, button {
-            padding: 10px;
-            margin: 10px;
-            width: 100%;
-            font-size: 1rem;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        footer {
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            margin-top: 40px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ETN airdrop Admin page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #133A2A;
+      color: white;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 20px;
+    }
+    .form-container {
+      background-color: #133A2A;
+      padding: 20px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .form-container h1 {
+      text-align: center;
+    }
+    .form-container label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+    .form-container input, .form-container textarea, .form-container select {
+      width: 90%;
+      padding: 10px;
+      background-color: #133A2A;
+      margin-bottom: 10px;
+      color: #FFFAED;
+      align-items: center;
+      justify-content: center;
+      border-color: #FFFAED;
+      border-radius: 8px;
+    }
+    .form-container button {
+      width: 100%;
+      padding: 10px;
+      align-items: center;
+      justify-content: center;
+      background-color: #F2C94C;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 8px;
+    }
+    .form-container button:hover {
+      background-color: #D6B141;
+    }
+    .task-list {
+      margin-top: 20px;
+    }
+    .task-item {
+      background-color: #1D4A31;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .task-item button {
+      background-color: #FF6347;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .task-item button:hover {
+      background-color: #D9534F;
+    }
+    .task-status {
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+    .task-status.active {
+      background-color: #28A745;
+    }
+    .task-status.inactive {
+      background-color: #DC3545;
+    }
+  </style>
 </head>
 <body>
+  <div class="form-container">
+    <h1>Add Task</h1>
+    <form id="taskForm">
+      <label for="name">Task Name:</label>
+      <input type="text" id="name" placeholder="Enter task name" required>
 
-<header>
-    <h1>World Clock & Time Converter</h1>
-</header>
+      <label for="description">Task Description:</label>
+      <textarea id="description" placeholder="Enter task description" required></textarea>
 
-<div class="container">
-    <!-- World Clock -->
-    <div class="clock-container" id="clock-container">
-        <!-- Dynamic clocks will appear here -->
-    </div>
+      <label for="reward">Reward (ETN):</label>
+      <input type="number" id="reward" placeholder="Enter reward amount" required>
 
-    <!-- Time Zone Converter -->
-    <div class="converter-container">
-        <h2>Time Zone Converter</h2>
-        <select id="from-timezone">
-            <option value="America/New_York">New York</option>
-            <option value="Europe/London">London</option>
-            <option value="Asia/Tokyo">Tokyo</option>
-            <option value="Australia/Sydney">Sydney</option>
-            <option value="Europe/Paris">Paris</option>
-        </select>
-        <select id="to-timezone">
-            <option value="America/New_York">New York</option>
-            <option value="Europe/London">London</option>
-            <option value="Asia/Tokyo">Tokyo</option>
-            <option value="Australia/Sydney">Sydney</option>
-            <option value="Europe/Paris">Paris</option>
-        </select>
-        <button onclick="convertTime()">Convert Time</button>
-        <div id="conversion-result" style="margin-top: 20px; font-size: 1.2rem; color: #4CAF50;"></div>
-    </div>
-</div>
+      <label for="status">Status:</label>
+      <select id="status" required>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
 
-<footer>
-    <p>&copy; 2024 World Clock & Converter</p>
-</footer>
+      <label for="iconUrl">Icon URL:</label>
+      <input type="url" id="iconUrl" placeholder="Enter icon URL" required>
 
-<script>
-    const cities = [
-        { name: "New York", timezone: "America/New_York" },
-        { name: "London", timezone: "Europe/London" },
-        { name: "Tokyo", timezone: "Asia/Tokyo" },
-        { name: "Sydney", timezone: "Australia/Sydney" },
-        { name: "Paris", timezone: "Europe/Paris" }
-    ];
+      <label for="link">Task Link:</label>
+      <input type="url" id="link" placeholder="Enter task link" required>
 
-    const apiUrl = "https://worldtimeapi.org/api/timezone/";
+      <button type="submit">Add Task</button>
+    </form>
+  </div>
 
-    // Function to fetch time for each city
-    async function fetchTime(city) {
+  <div class="task-list" id="taskList">
+    <!-- Added tasks will appear here -->
+  </div>
+
+  <script type="module">
+    // Import Firebase modules
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+    import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+
+    // Firebase configuration (use your actual credentials)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBX3g8wWxcTtwFDsJNJVcjUDIGxMd1L0Rk",
+      authDomain: "mytestapp-f6913.firebaseapp.com",
+      projectId: "mytestapp-f6913",
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Form submission handler
+    const taskForm = document.getElementById('taskForm');
+    taskForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Collect form data
+      const task = {
+        name: document.getElementById('name').value.trim(),
+        description: document.getElementById('description').value.trim(),
+        reward: parseInt(document.getElementById('reward').value.trim(), 10),
+        status: document.getElementById('status').value,
+        iconUrl: document.getElementById('iconUrl').value.trim(),
+        link: document.getElementById('link').value.trim(),
+        completions: 0, // Initialize completions to 0
+      };
+
+      try {
+        // Add the task to Firestore
+        const docRef = await addDoc(collection(db, 'tasks'), task);
+        alert('Task added successfully!');
+        taskForm.reset(); // Clear the form
+        displayTasks(); // Reload tasks
+      } catch (error) {
+        console.error('Error adding task:', error);
+        alert('Failed to add task. Please try again.');
+      }
+    });
+
+    // Function to fetch and display tasks
+    async function displayTasks() {
+      const taskList = document.getElementById('taskList');
+      taskList.innerHTML = ''; // Clear the list before reloading
+
+      const querySnapshot = await getDocs(collection(db, 'tasks'));
+      querySnapshot.forEach((doc) => {
+        const task = doc.data();
+        const taskId = doc.id;
+        
+        // Create task item
+        const taskItem = document.createElement('div');
+        taskItem.classList.add('task-item');
+        taskItem.innerHTML = `
+          <div>
+            <strong>${task.name}</strong><br>
+            <span>${task.description}</span><br>
+            <span>Reward: ${task.reward} ETN</span><br>
+            <span class="task-status ${task.status}">${task.status}</span><br>
+            <a href="${task.link}" target="_blank">Task Link</a>
+          </div>
+          <div>
+            <button onclick="editTask('${taskId}')">Edit</button>
+            <button onclick="deleteTask('${taskId}')">Delete</button>
+            <button onclick="toggleStatus('${taskId}', '${task.status}')">Toggle Status</button>
+          </div>
+        `;
+        taskList.appendChild(taskItem);
+      });
+    }
+
+    // Function to edit a task
+    async function editTask(taskId) {
+      const taskRef = doc(db, 'tasks', taskId);
+      const taskSnap = await getDoc(taskRef);
+      const task = taskSnap.data();
+
+      // Pre-fill the form with the current task details
+      document.getElementById('name').value = task.name;
+      document.getElementById('description').value = task.description;
+      document.getElementById('reward').value = task.reward;
+      document.getElementById('status').value = task.status;
+      document.getElementById('iconUrl').value = task.iconUrl;
+      document.getElementById('link').value = task.link;
+
+      // Change form submit action to update task
+      taskForm.removeEventListener('submit', taskFormSubmitHandler);
+      taskForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Collect updated form data
+        const updatedTask = {
+          name: document.getElementById('name').value.trim(),
+          description: document.getElementById('description').value.trim(),
+          reward: parseInt(document.getElementById('reward').value.trim(), 10),
+          status: document.getElementById('status').value,
+          iconUrl: document.getElementById('iconUrl').value.trim(),
+          link: document.getElementById('link').value.trim(),
+        };
+
         try {
-            const response = await fetch(`${apiUrl}${city.timezone}`);
-            const data = await response.json();
-
-            // Extract time and date from API response
-            const time = data.datetime;
-            const date = new Date(time); // Convert to Date object
-
-            return {
-                time: date.toLocaleTimeString(), // Get the formatted time
-                date: date.toLocaleDateString()  // Get the formatted date
-            };
+          await updateDoc(taskRef, updatedTask);
+          alert('Task updated successfully!');
+          taskForm.reset();
+          displayTasks();
         } catch (error) {
-            console.error("Error fetching time:", error);
-            return { time: "Error", date: "Error" };
+          console.error('Error updating task:', error);
+          alert('Failed to update task. Please try again.');
         }
+      });
     }
 
-    // Function to update the clocks
-    async function updateClocks() {
-        const clockContainer = document.getElementById("clock-container");
-        clockContainer.innerHTML = "";  // Clear the container
-
-        // Loop over cities and fetch their times
-        for (let city of cities) {
-            const { time, date } = await fetchTime(city);
-            const clockElement = document.createElement("div");
-            clockElement.classList.add("clock");
-
-            clockElement.innerHTML = `
-                <div class="city">${city.name}</div>
-                <div class="time">${time}</div>
-                <div class="date">${date}</div>
-            `;
-            clockContainer.appendChild(clockElement);
-        }
+    // Function to delete a task
+    async function deleteTask(taskId) {
+      const taskRef = doc(db, 'tasks', taskId);
+      try {
+        await deleteDoc(taskRef);
+        alert('Task deleted successfully!');
+        displayTasks(); // Reload tasks
+      } catch (error) {
+        console.error('Error deleting task:', error);
+        alert('Failed to delete task. Please try again.');
+      }
     }
 
-    // Function to convert time between timezones
-    async function convertTime() {
-        const fromTimezone = document.getElementById("from-timezone").value;
-        const toTimezone = document.getElementById("to-timezone").value;
-
-        try {
-            const responseFrom = await fetch(`${apiUrl}${fromTimezone}`);
-            const dataFrom = await responseFrom.json();
-            const timeFrom = new Date(dataFrom.datetime).toLocaleString();
-
-            const responseTo = await fetch(`${apiUrl}${toTimezone}`);
-            const dataTo = await responseTo.json();
-            const timeTo = new Date(dataTo.datetime).toLocaleString();
-
-            document.getElementById("conversion-result").innerHTML = `
-                Time in ${fromTimezone}: ${timeFrom}<br>
-                Time in ${toTimezone}: ${timeTo}
-            `;
-        } catch (error) {
-            console.error("Error converting time:", error);
-        }
+    // Function to toggle task status
+    async function toggleStatus(taskId, currentStatus) {
+      const taskRef = doc(db, 'tasks', taskId);
+      const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+      try {
+        await updateDoc(taskRef, { status: newStatus });
+        alert(`Task status updated to ${newStatus}`);
+        displayTasks(); // Reload tasks
+      } catch (error) {
+        console.error('Error toggling status:', error);
+        alert('Failed to update status. Please try again.');
+      }
     }
 
-    // Initial clock update
-    updateClocks();
-
-    // Set an interval to update the time every 30 seconds
-    setInterval(updateClocks, 30000);
-</script>
-
+    // Initial load
+    displayTasks();
+  </script>
 </body>
 </html>
